@@ -10,11 +10,13 @@ using namespace glm;
 // Packed vertex buffer for cube
 static float positionArray[] = {
 
-	-1.0f, 1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, -1.0f, 1.0f,
-	1.0f, 1.0f, -1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f, 1.0f,
+	//top 4 verticies
+	-2.0f, 2.0f, 2.0f, 1.0f, //x, y, z, ?
+	-2.0f, 2.0f, -2.0f, 1.0f,
+	2.0f, 2.0f, -2.0f, 1.0f,
+	2.0f, 2.0f, 2.0f, 1.0f,
 
+	//bottom 4 verticies
 	-1.0f, -1.0f, 1.0f, 1.0f,
 	-1.0f, -1.0f, -1.0f, 1.0f,
 	1.0f, -1.0f, -1.0f, 1.0f,
@@ -24,15 +26,17 @@ static float positionArray[] = {
 // Packed colour buffer for principle axes model
 static float colourArray[] = {
 
+	//top 4 verticies
+	1.0f, 0.0f, 0.0f, 1.0f, //rgb a(?)
 	1.0f, 0.0f, 0.0f, 1.0f,
-	1.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 1.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 0.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f,
 
+	//bottom 4 verticies
 	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 1.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 0.0f, 1.0f,
-	0.0f, 0.0f, 0.0f, 1.0f
+	0.0f, 0.0f, 1.0f, 1.0f,
+	0.0f, 0.0f, 1.0f, 1.0f,
+	0.0f, 0.0f, 1.0f, 1.0f
 };
 
 

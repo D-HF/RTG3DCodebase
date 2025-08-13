@@ -1,4 +1,3 @@
-
 #include "core.h"
 #include "TextureLoader.h"
 #include "ArcballCamera.h"
@@ -38,8 +37,11 @@ vec3 g_DLambient = vec3(0.2f, 0.2f, 0.2f);
 
 AIMesh* g_creatureMesh = nullptr;
 vec3 g_beastPos = vec3(2.0f, 0.0f, 0.0f);
+vec3 g_duckPos = vec3(6.0f, 0.0f, 0.0f); //duck pos
 float g_beastRotation = 0.0f;
+float g_duckRotation = 0.0f; //duck rot
 AIMesh* g_planetMesh = nullptr;
+AIMesh* g_duckMesh = nullptr; //duck mesh
 
 int g_showing = 0;
 int g_NumExamples = 3;
@@ -148,6 +150,10 @@ int main()
 	if (g_planetMesh) {
 		g_planetMesh->addTexture(string("Assets\\Textures\\Hodges_G_MountainRock1.jpg"), FIF_JPEG);
 	}
+	g_duckMesh = new AIMesh(string("Assets\\duck\\rubber_duck_toy_4k.obj"));
+	if (g_duckMesh) {
+		g_duckMesh->addTexture(string("Assets\\duck\\rubber_duck_toy_diff_4k.jpg"), FIF_JPEG);
+	}//if duckMesh
 
 	//
 	//Set up Scene class
@@ -178,7 +184,7 @@ int main()
 
 		// update window title
 		char timingString[256];
-		sprintf_s(timingString, 256, "CIS5013: Average fps: %.0f; Average spf: %f", g_gameClock->averageFPS(), g_gameClock->averageSPF() / 1000.0f);
+		sprintf_s(timingString, 256, "GDV5001: Average fps: %.0f; Average spf: %f", g_gameClock->averageFPS(), g_gameClock->averageSPF() / 1000.0f);
 		glfwSetWindowTitle(window, timingString);
 	}
 
@@ -262,6 +268,17 @@ void renderScene()
 			g_planetMesh->setupTextures();
 			g_planetMesh->render();
 		}
+		if (g_duckMesh) {
+
+			// Setup transforms
+			Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
+			mat4 modelTransform = glm::translate(identity<mat4>(), g_duckPos) * eulerAngleY<float>(glm::radians<float>(g_duckRotation));
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+
+			g_duckMesh->setupTextures();
+			g_duckMesh->render();
+		}
+		
 	}
 	break;
 
