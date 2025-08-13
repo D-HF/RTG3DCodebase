@@ -31,13 +31,15 @@ Cube* g_cube = nullptr;
 GLuint g_flatColourShader;
 
 GLuint g_texDirLightShader;
-vec3 g_DLdirection = vec3(0.0f, 1.0f, 0.0f);
+vec3 g_DLdirection = vec3(1.0f, 1.0f, 0.0f);
 vec3 g_DLcolour = vec3(1.0f, 1.0f, 1.0f);
 vec3 g_DLambient = vec3(0.2f, 0.2f, 0.2f);
 
 AIMesh* g_creatureMesh = nullptr;
 vec3 g_beastPos = vec3(2.0f, 0.0f, 0.0f);
 vec3 g_duckPos = vec3(6.0f, 0.0f, 0.0f); //duck pos
+vec3 camViewPos = vec3(0.0f, 0.0f, 0.0f); //cam vector for positioning
+float camMoveSpeed = 0.1;
 float g_beastRotation = 0.0f;
 float g_duckRotation = 0.0f; //duck rot
 AIMesh* g_planetMesh = nullptr;
@@ -50,8 +52,8 @@ int g_NumExamples = 3;
 Scene* g_Scene = nullptr;
 
 // Window size
-const unsigned int g_initWidth = 512;
-const unsigned int g_initHeight = 512;
+const unsigned int g_initWidth = 900;
+const unsigned int g_initHeight = 900;
 
 #pragma endregion
 
@@ -135,7 +137,7 @@ int main()
 	g_texDirLightShader = setupShaders(string("Assets\\Shaders\\texture-directional.vert"), string("Assets\\Shaders\\texture-directional.frag"));
 	g_flatColourShader = setupShaders(string("Assets\\Shaders\\flatColour.vert"), string("Assets\\Shaders\\flatColour.frag"));
 
-	g_mainCamera = new ArcballCamera(0.0f, 0.0f, 1.98595f, 55.0f, 1.0f, 0.1f, 500.0f);
+	g_mainCamera = new ArcballCamera(0.0f, 0.0f, 1.98595f, 55.0f, 1.0f, 0.1f, 500.0f);//QUICKSEND
 
 	g_principleAxes = new CGPrincipleAxes();
 
@@ -209,7 +211,9 @@ void renderScene()
 	mat4 cameraTransform = g_mainCamera->projectionTransform() * g_mainCamera->viewTransform();
 
 	mat4 cameraProjection = g_mainCamera->projectionTransform();
-	mat4 cameraView = g_mainCamera->viewTransform() * translate(identity<mat4>(), -g_beastPos);
+	
+	mat4 cameraView = g_mainCamera->viewTransform() * translate(identity<mat4>(), -camViewPos);//QUICKSEND
+
 
 #// Render principle axes - no modelling transforms so just use cameraTransform
 	if (true)
@@ -352,6 +356,37 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			g_showing++;
 			g_showing = g_showing % g_NumExamples;
 
+		case GLFW_KEY_W: //QUICKSEND
+			//move forward
+			cout << "W pressed\n";
+			camViewPos.z -= camMoveSpeed;
+			break;
+
+		case GLFW_KEY_S:
+			//move backward
+			camViewPos.z += camMoveSpeed;
+			cout << "S pressed\n";
+			break;
+
+		case GLFW_KEY_A:
+			//move left
+			camViewPos.x -= camMoveSpeed;
+			cout << "A pressed\n";
+			break;
+
+		case GLFW_KEY_D:
+			//move right
+			camViewPos.x += camMoveSpeed;
+			cout << "D pressed\n";
+			break;
+
+		case GLFW_KEY_O:
+			//reset camera
+			camViewPos.x = 0.0f;
+			camViewPos.y = 0.0f;
+			camViewPos.z = 0.0f;
+			cout << "O pressed\n";
+			break;
 		default:
 		{
 		}
@@ -367,6 +402,36 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 		}
 		}
 	}
+	else if (_action == GLFW_REPEAT) {
+		switch (_key) {
+		case GLFW_KEY_W:
+			//move forward
+			cout << "W pressed\n";
+			camViewPos.z -= camMoveSpeed;
+			break;
+
+		case GLFW_KEY_S:
+			//move backward
+			camViewPos.z += camMoveSpeed;
+			cout << "S pressed\n";
+			break;
+
+		case GLFW_KEY_A:
+			//move left
+			camViewPos.x -= camMoveSpeed;
+			cout << "A pressed\n";
+			break;
+
+		case GLFW_KEY_D:
+			//move right
+			camViewPos.x += camMoveSpeed;
+			cout << "D pressed\n";
+			break;
+		default:
+		{
+		}//default
+		}//switch
+	}//else if
 }
 
 
