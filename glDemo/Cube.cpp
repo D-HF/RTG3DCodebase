@@ -10,81 +10,82 @@ using namespace glm;
 // Packed vertex buffer for cube
 static float positionArray[] = {
 	//x, y, z, w
-	//top 4 verticies 
-	-1.0f, 1.0f, 1.0f, 1.0f, //left top front
-	-1.0f, 1.0f, -1.0f, 1.0f, //left top back
-	1.0f, 1.0f, -1.0f, 1.0f, //right top back
-	1.0f, 1.0f, 1.0f, 1.0f, //right top front
+	//top 4 vertices 
+	-1.0f, 1.0f, 1.0f, 1.0f, //left top front 0
+	-1.0f, 1.0f, -1.0f, 1.0f, //left top back 1
+	1.0f, 1.0f, -1.0f, 1.0f, //right top back 2
+	1.0f, 1.0f, 1.0f, 1.0f, //right top front 3
 
-	//bottom 4 verticies
-	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front
-	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back
-	1.0f, -1.0f, -1.0f, 1.0f, //right bottom back
-	1.0f, -1.0f, 1.0f, 1.0f, //right bottom front
+	//bottom 4 vertices
+	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front 4
+	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back 5
+	1.0f, -1.0f, -1.0f, 1.0f, //right bottom back 6
+	1.0f, -1.0f, 1.0f, 1.0f, //right bottom front 7
 
-	//front 4 verticies
-	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front
-	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front
-	1.0f, 1.0f, 1.0f, 1.0f, //right top front
-	1.0f, 1.0f, 1.0f, 1.0f, //right top front
+	//front 4 vertices
+	-1.0f, 1.0f, 1.0f, 1.0f, //left top front 8
+	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front 9
+	1.0f, -1.0f, 1.0f, 1.0f, //right bottom front 10
+	1.0f, 1.0f, 1.0f, 1.0f, //right top front 11
+	
+	//back 4 vertices
+	-1.0f, 1.0f, -1.0f, 1.0f, //left top back 12
+	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back 13
+	1.0f, -1.0f, -1.0f, 1.0f, //right bottom back 14
+	1.0f, 1.0f, -1.0f, 1.0f, //right top back 15
 
-	//back 4 verticies
-	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back
-	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back
-	1.0f, 1.0f, -1.0f, 1.0f, //right top back
-	1.0f, 1.0f, -1.0f, 1.0f, //right top front
+	//left 4 vertices
+	-1.0f, 1.0f, 1.0f, 1.0f, //left top front 16
+	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front 17
+	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back 18
+	-1.0f, 1.0f, -1.0f, 1.0f, //left top back 19
 
-	//left 4 verticies
-	-1.0f, 1.0f, 1.0f, 1.0f, //left top front
-	-1.0f, 1.0f, -1.0f, 1.0f, //left top back
-	-1.0f, -1.0f, 1.0f, 1.0f, //left bottom front
-	-1.0f, -1.0f, -1.0f, 1.0f, //left bottom back
+	//right 4 vertices
+	1.0f, 1.0f, 1.0f, 1.0f, //right top front 20
+	1.0f, -1.0f, 1.0f, 1.0f, //right bottom front 21
+	1.0f, -1.0f, -1.0f, 1.0f, //right bottom back 22
+	1.0f, 1.0f, -1.0f, 1.0f, //right top back 23
 
-	//right 4 verticies
-	1.0f, 1.0f, -1.0f, 1.0f, //right top back
-	1.0f, 1.0f, 2.0f, 1.0f, //right top front
-	1.0f, 1.0f, -1.0f, 1.0f, //right top back
-	1.0f, 1.0f, -1.0f, 1.0f //right top front
 };
 
 // Packed colour buffer for principle axes model
 static float colourArray[] = {
 
-	//top 4 verticies
-	1.0f, 0.0f, 0.0f, 1.0f, //rgb a(?)
-	1.0f, 0.0f, 0.0f, 1.0f,
-	1.0f, 0.0f, 0.0f, 1.0f,
-	1.0f, 0.0f, 0.0f, 1.0f,
+	//top 4 vertices - red
+	1.0f, 0.0f, 0.0f, 1.0f, //0
+	1.0f, 0.0f, 0.0f, 1.0f, //1
+	1.0f, 0.0f, 0.0f, 1.0f, //2
+	1.0f, 0.0f, 0.0f, 1.0f, //3
 
-	//bottom 4 verticies
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f,
+	//bottom 4 vertices - blue
+	0.0f, 0.0f, 1.0f, 1.0f, //4
+	0.0f, 0.0f, 1.0f, 1.0f, //5
+	0.0f, 0.0f, 1.0f, 1.0f, //6
+	0.0f, 0.0f, 1.0f, 1.0f, //7
 
-	//front 4 verticies
-	0.0f, 1.0f, 0.0f, 1.0f,
-	0.0f, 1.0f, 0.0f, 1.0f,
-	0.0f, 1.0f, 0.0f, 1.0f,
-	0.0f, 1.0f, 0.0f, 1.0f,
+	//front 4 vertices - green
+	0.0f, 1.0f, 0.0f, 1.0f, //8
+	0.0f, 1.0f, 0.0f, 1.0f, //9
+	0.0f, 1.0f, 0.0f, 1.0f, //10
+	0.0f, 1.0f, 0.0f, 1.0f, //11
 
-	//back 4 verticies
-	0.0f, 1.0f, 1.0f, 1.0f,
-	0.0f, 1.0f, 1.0f, 1.0f,
-	0.0f, 1.0f, 1.0f, 1.0f,
-	0.0f, 1.0f, 1.0f, 1.0f,
+	//back 4 vertices - 
+	0.0f, 1.0f, 1.0f, 1.0f, //12
+	0.0f, 1.0f, 1.0f, 1.0f, //13
+	0.0f, 1.0f, 1.0f, 1.0f, //14
+	0.0f, 1.0f, 1.0f, 1.0f, //15
 
-	//left 4 verticies
-	1.0f, 1.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 0.0f, 1.0f,
+	//left 4 vertices - yellow
+	1.0f, 1.0f, 0.0f, 1.0f, //16
+	1.0f, 1.0f, 0.0f, 1.0f, //17
+	1.0f, 1.0f, 0.0f, 1.0f, //18
+	1.0f, 1.0f, 0.0f, 1.0f, //19
 
-	//right 4 verticies
-	1.0f, 0.0f, 1.0f, 1.0f,
-	1.0f, 0.0f, 1.0f, 1.0f,
-	1.0f, 0.0f, 1.0f, 1.0f,
-	1.0f, 0.0f, 1.0f, 1.0f,
+	//right 4 vertices - 
+	1.0f, 0.0f, 1.0f, 1.0f, //20
+	1.0f, 0.0f, 1.0f, 1.0f, //21
+	1.0f, 0.0f, 1.0f, 1.0f, //22
+	1.0f, 0.0f, 1.0f, 1.0f, //23
 };
 
 
@@ -100,24 +101,29 @@ static unsigned int indexArray[] = {
 	5, 6, 4, 
 	6, 7, 4,
 
-	// Right face
-	3, 7, 2, 
-	7, 6, 2,
-
 	// Front face
-	0, 4, 3,
-	4, 7, 3,
-	
+	//0, 4, 3,
+	//4, 7, 3,
+	8, 9, 11,
+	9, 10, 11,
+
+	// Back face
+	//2, 6, 1,
+	//6, 5, 1,
+	15, 14, 12,
+	14, 13, 12,
 
 	// Left face
-	0, 1, 5,
-	4, 0, 5,
-	
-	
-	// Back face
-	2, 6, 1,
-	6, 5, 1
-	
+	//0, 1, 5,
+	//4, 0, 5,
+	16, 19, 18,
+	17, 16, 18,
+
+	// Right face
+	//3, 7, 2,
+	//7, 6, 2,
+	20, 21, 23,
+	21, 22, 23
 };
 
 
