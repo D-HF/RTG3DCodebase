@@ -161,7 +161,27 @@ void Scene::Render()
 		}
 	}
 
-	//TODO: now do the same for RP_TRANSPARENT here
+	for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+	{
+		if ((*it)->GetRP() & RP_TRANSPARENT)
+		{
+			//set shader program using
+			GLuint SP = (*it)->GetShaderProg();
+			glUseProgram(SP);
+
+			//set up for uniform shader values for current camera
+			m_useCamera->SetRenderValues(SP);
+
+			//loop through setting up uniform shader values for anything else
+			SetShaderUniforms(SP);
+
+			//set any uniform shader values for the actual model
+			(*it)->PreRender();
+
+			//actually render the GameObject
+			(*it)->Render();
+		}
+	}
 }
 
 void Scene::SetShaderUniforms(GLuint _shaderprog)

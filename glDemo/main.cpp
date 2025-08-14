@@ -54,6 +54,7 @@ AIMesh* g_catMesh = nullptr; //cat mesh
 float g_catRotation = 0.0f; //cat rotation
 vec3 g_catPos = vec3(4.0f, 0.0f, 0.0f); //cat position
 
+Scene* m_useCameraIndex;
 
 int g_showing = 0;
 int g_NumExamples = 4;
@@ -385,7 +386,9 @@ void renderScene()
 				g_catMesh->render();
 			}
 			//set camera to ducks position
-			camViewPos = g_duckPos;
+			camViewPos.x = g_duckPos.x;
+			camViewPos.z = g_duckPos.z;
+			camViewPos.y = 15;
 
 			break;
 
@@ -448,8 +451,10 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			camViewPos.z = 0.0f;
 			cout << "O pressed\n";
 			break;
+		case GLFW_KEY_PERIOD:
+			//next camera
 
-
+			break;
 			//Camera Movement WASD + QE
 		case GLFW_KEY_W: //QUICKSEND
 			//move forward
