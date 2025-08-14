@@ -9,6 +9,7 @@
 #include "Cube.h"
 #include "Scene.h"
 #include "Ground.h"
+#include "Camera.h"
 
 
 using namespace std;
@@ -41,12 +42,18 @@ AIMesh* g_creatureMesh = nullptr;
 vec3 g_beastPos = vec3(2.0f, 0.0f, 0.0f);
 vec3 g_duckPos = vec3(6.0f, 0.0f, 0.0f); //duck pos
 vec3 camViewPos = vec3(0.0f, 0.0f, 0.0f); //cam vector for positioning
-float camMoveSpeed = 0.1;
-float duckMoveSpeed = 0.1;
+float camMoveSpeed = 0.1; //movement for camera speed
+float duckMoveSpeed = 0.1; //movement for duck speed
 float g_beastRotation = 0.0f;
 float g_duckRotation = 0.0f; //duck rot
 AIMesh* g_planetMesh = nullptr;
 AIMesh* g_duckMesh = nullptr; //duck mesh
+Camera* g_cam = nullptr; //camera
+vec3 g_camViewPos = vec3(0.0f, 0.0f, 0.0f); //g_cam position
+AIMesh* g_catMesh = nullptr; //cat mesh
+float g_catRotation = 0.0f; //cat rotation
+vec3 g_catPos = vec3(4.0f, 0.0f, 0.0f); //cat position
+
 
 int g_showing = 0;
 int g_NumExamples = 4;
@@ -141,6 +148,12 @@ int main()
 	g_flatColourShader = setupShaders(string("Assets\\Shaders\\flatColour.vert"), string("Assets\\Shaders\\flatColour.frag"));
 
 	g_mainCamera = new ArcballCamera(0.0f, 0.0f, 1.98595f, 55.0f, 1.0f, 0.1f, 500.0f);//QUICKSEND
+	/*
+	g_cam = new Camera();
+	if (g_cam) {
+		g_cam->Init(g_initWidth, g_initHeight, g_Scene);
+	} attempt to make a camera, unsure of where to go from here*/
+
 
 	g_principleAxes = new CGPrincipleAxes();
 
@@ -151,16 +164,19 @@ int main()
 	if (g_creatureMesh) {
 		g_creatureMesh->addTexture(string("Assets\\beast\\beast_texture.bmp"), FIF_BMP);
 	}
-
 	g_planetMesh = new AIMesh(string("Assets\\gsphere.obj"));
 	if (g_planetMesh) {
 		g_planetMesh->addTexture(string("Assets\\Textures\\Hodges_G_MountainRock1.jpg"), FIF_JPEG);
 	}
+
 	g_duckMesh = new AIMesh(string("Assets\\duck\\rubber_duck_toy_4k.obj"));
 	if (g_duckMesh) {
 		g_duckMesh->addTexture(string("Assets\\duck\\rubber_duck_toy_diff_4k.jpg"), FIF_JPEG);
 	}//if duckMesh
-
+	g_catMesh = new AIMesh(string("Assets\\Cat\\12221_cat_v1_l3.obj"));
+	if (g_catMesh){
+		g_catMesh->addTexture(string("Assets\\Cat\\Cat_diffuse.jpg"), FIF_JPEG);
+	}//if catMesh
 	//
 	//Set up Scene class
 	//
@@ -174,7 +190,6 @@ int main()
 	g_Scene->Init();
 
 	manifest.close();
-
 
 	//
 	// Main loop
@@ -215,8 +230,6 @@ void renderScene()
 	mat4 cameraTransform = g_mainCamera->projectionTransform() * g_mainCamera->viewTransform();
 	mat4 cameraProjection = g_mainCamera->projectionTransform();
 	mat4 cameraView = g_mainCamera->viewTransform() * translate(identity<mat4>(), -camViewPos);//QUICKSEND
-
-	
 
 
 #// Render principle axes - no modelling transforms so just use cameraTransform
@@ -348,6 +361,29 @@ void renderScene()
 				g_duckMesh->render();
 			}//if duck
 
+			if (g_catMesh) {
+				glUseProgram(g_texDirLightShader);
+				GLint pLocation;
+				Helper::SetUniformLocation(g_texDirLightShader, "viewMatrix", &pLocation);
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
+				Helper::SetUniformLocation(g_texDirLightShader, "projMatrix", &pLocation);
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
+				Helper::SetUniformLocation(g_texDirLightShader, "texture", &pLocation);
+				glUniform1i(pLocation, 0); // set to point to texture unit 0 for AIMeshes
+				Helper::SetUniformLocation(g_texDirLightShader, "DIRDir", &pLocation);
+				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLdirection);
+				Helper::SetUniformLocation(g_texDirLightShader, "DIRCol", &pLocation);
+				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLcolour);
+				Helper::SetUniformLocation(g_texDirLightShader, "DIRAmb", &pLocation);
+				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLambient);
+
+				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
+				mat4 modelTransform = glm::translate(identity<mat4>(), g_catPos) * eulerAngleY<float>(glm::radians<float>(g_catRotation));
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+
+				g_catMesh->setupTextures();
+				g_catMesh->render();
+			}
 			//set camera to ducks position
 			camViewPos = g_duckPos;
 
