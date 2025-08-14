@@ -42,6 +42,7 @@ vec3 g_beastPos = vec3(2.0f, 0.0f, 0.0f);
 vec3 g_duckPos = vec3(6.0f, 0.0f, 0.0f); //duck pos
 vec3 camViewPos = vec3(0.0f, 0.0f, 0.0f); //cam vector for positioning
 float camMoveSpeed = 0.1;
+float duckMoveSpeed = 0.1;
 float g_beastRotation = 0.0f;
 float g_duckRotation = 0.0f; //duck rot
 AIMesh* g_planetMesh = nullptr;
@@ -347,6 +348,9 @@ void renderScene()
 				g_duckMesh->render();
 			}//if duck
 
+			//set camera to ducks position
+			camViewPos = g_duckPos;
+
 			break;
 
 		}//case 3
@@ -389,7 +393,6 @@ void resizeWindow(GLFWwindow* _window, int _width, int _height)
 void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
 {
 	if (_action == GLFW_PRESS) {
-
 		// check which key was pressed...
 		switch (_key)
 		{
@@ -402,6 +405,16 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			g_showing = g_showing % g_NumExamples;
 			break;
 
+		case GLFW_KEY_O:
+			//reset camera
+			camViewPos.x = 0.0f;
+			camViewPos.y = 0.0f;
+			camViewPos.z = 0.0f;
+			cout << "O pressed\n";
+			break;
+
+
+			//Camera Movement WASD + QE
 		case GLFW_KEY_W: //QUICKSEND
 			//move forward
 			cout << "W pressed\n";
@@ -441,54 +454,53 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			cout << "E pressed\n";
 			cout << camViewPos.y;
 			break;
-		case GLFW_KEY_O:
-			//reset camera
-			camViewPos.x = 0.0f;
-			camViewPos.y = 0.0f;
-			camViewPos.z = 0.0f;
-			cout << "O pressed\n";
-			break;
+
+
+		//Move duck UP/DOWN/LEFT/RIGHT
 		case GLFW_KEY_UP:
 			//move duck forward
 			if (g_showing == 3) {
-				g_duckPos.z -= 0.05;
+				g_duckPos.z -= duckMoveSpeed;
 				cout << "\n";
 				cout << g_duckPos.z;
 				g_duckRotation = 180;
 			}//if
 			break;
+
 		case GLFW_KEY_DOWN:
 			//move duck backward
 			if (g_showing == 3) {
-				g_duckPos.z += 0.05;
+				g_duckPos.z += duckMoveSpeed;
 				cout << "\n";
 				cout << g_duckPos.z;
 				g_duckRotation = 0;
 			}//if
 			break;
+
 		case GLFW_KEY_LEFT:
 			//move duck left
 			if (g_showing == 3) {
-				g_duckPos.x -= 0.05;
+				g_duckPos.x -= duckMoveSpeed;
 				cout << "\n";
 				cout << g_duckPos.x;
 				g_duckRotation = 270;
 			}//if
 			break;
+
 		case GLFW_KEY_RIGHT:
-			//move duck right
+			//move duck right			
 			if (g_showing == 3) {
-				g_duckPos.x += 0.05;
+				g_duckPos.x += duckMoveSpeed;
 				cout << "\n";
 				cout << g_duckPos.x;
 				g_duckRotation = 90;
-			}//if
+			}
 			break;
 
 		default:
-		{
-		}
-		}
+			{
+			}//default
+		}//switch
 	}
 	else if (_action == GLFW_RELEASE) 
 	{
@@ -502,80 +514,120 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 	}
 	else if (_action == GLFW_REPEAT) {
 		switch (_key) {
+
+			//move camera WASD + QE
 		case GLFW_KEY_W:
 			//move forward
-			cout << "W pressed\n";
-			camViewPos.z -= camMoveSpeed;
-			cout << camViewPos.z;
-			break;
+				if (g_showing != 3) {
+					cout << "W pressed\n";
+					camViewPos.z -= camMoveSpeed;
+					cout << camViewPos.z;
+				}//if
+				break;
 
-		case GLFW_KEY_S:
-			//move backward
-			camViewPos.z += camMoveSpeed;
-			cout << "S pressed\n";
-			cout << camViewPos.z;
-			break;
+			case GLFW_KEY_S:
+				//move backward
+				if (g_showing != 3) {
+					camViewPos.z += camMoveSpeed;
+					cout << "S pressed\n";
+					cout << camViewPos.z;
+				}//if
+				break;
 
-		case GLFW_KEY_A:
-			//move left
-			camViewPos.x -= camMoveSpeed;
-			cout << "A pressed\n";
-			cout << camViewPos.x;
-			break;
+			case GLFW_KEY_A:
+				//move left
+				if (g_showing != 3) {
+					camViewPos.x -= camMoveSpeed;
+					cout << "A pressed\n";
+					cout << camViewPos.x;
+				}//if
+				break;
 
-		case GLFW_KEY_D:
-			//move right
-			camViewPos.x += camMoveSpeed;
-			cout << "D pressed\n";
-			cout << camViewPos.x;
-			break;
-		case GLFW_KEY_Q:
-			//move up camera
-			camViewPos.y += camMoveSpeed;
-			cout << "Q pressed\n";
-			cout << camViewPos.y;
-			break;
-		case GLFW_KEY_E:
-			//move down camera
-			camViewPos.y -= camMoveSpeed;
-			cout << "E pressed\n";
-			cout << camViewPos.y;
-			break;
-		case GLFW_KEY_UP:
-			//move duck forward
-			if (g_showing == 3) {
-				g_duckPos.z -= 0.05;
-				cout << "\n";
-				cout << g_duckPos.z;
-			}//if
-			break;
-		case GLFW_KEY_DOWN:
-			//move duck backward
-			if (g_showing == 3) {
-				g_duckPos.z += 0.05;
-				cout << "\n";
-				cout << g_duckPos.z;
-			}//if
-			break;
-		case GLFW_KEY_LEFT:
-			//move duck left
-			if (g_showing == 3) {
-				g_duckPos.x -= 0.05;
-				cout << "\n";
-				cout << g_duckPos.x;
-			}//if
-			break;
-		case GLFW_KEY_RIGHT:
-			//move duck right
-			if (g_showing == 3) {
-				g_duckPos.x += 0.05;
-				cout << "\n";
-				cout << g_duckPos.x;
-			}//if
-			break;
-		default:
-		{
-		}//default
+			case GLFW_KEY_D:
+				//move right
+				if (g_showing != 3) {
+					camViewPos.x += camMoveSpeed;
+					cout << "D pressed\n";
+					cout << camViewPos.x;
+				}//if
+				break;
+
+			case GLFW_KEY_Q:
+				//move up camera
+				if (g_showing != 3) {
+					camViewPos.y += camMoveSpeed;
+					cout << "Q pressed\n";
+					cout << camViewPos.y;
+				}//if
+				break;
+			case GLFW_KEY_E:
+				//move down camera
+				if (g_showing != 3) {
+					camViewPos.y -= camMoveSpeed;
+					cout << "E pressed\n";
+					cout << camViewPos.y;
+				}//if
+				break;
+
+			//move duck UP/DOWN/LEFT/RIGHT
+			case GLFW_KEY_UP:
+				//move duck forward
+				if (g_showing == 3) {
+					g_duckPos.z -= duckMoveSpeed;
+					cout << "\n";
+					cout << g_duckPos.z;
+
+					//move camera
+					cout << "W pressed\n";
+					camViewPos.z -= camMoveSpeed;
+					cout << camViewPos.z;
+				}//if
+				break;
+
+			case GLFW_KEY_DOWN:
+				//move duck backward
+				if (g_showing == 3) {
+					g_duckPos.z += duckMoveSpeed;
+					cout << "\n";
+					cout << g_duckPos.z;
+
+					//move camera
+					camViewPos.z += camMoveSpeed;
+					cout << "S pressed\n";
+					cout << camViewPos.z;
+				}//if
+				break;
+
+			case GLFW_KEY_LEFT:
+				//move duck left
+				if (g_showing == 3) {
+					g_duckPos.x -= duckMoveSpeed;
+					cout << "\n";
+					cout << g_duckPos.x;
+
+					//move camera
+					camViewPos.x -= camMoveSpeed;
+					cout << "A pressed\n";
+					cout << camViewPos.x;
+				}//if
+				break;
+
+			case GLFW_KEY_RIGHT:
+				//move duck right
+				if (g_showing == 3) {
+					g_duckPos.x += duckMoveSpeed;
+					cout << "\n";
+					cout << g_duckPos.x;
+
+					//move camera 
+					camViewPos.x += camMoveSpeed;
+					cout << "D pressed\n";
+					cout << camViewPos.x;
+				}//if
+				break;
+			default:
+			{
+			}//default
 		}//switch
 	}//else if
 }
