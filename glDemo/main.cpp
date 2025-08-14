@@ -362,18 +362,18 @@ void renderScene()
 				g_duckMesh->render();
 			}//if duck
 
-			if (g_catMesh) {
+			//attempt at adding cat mesh
+			/*if (g_catMesh) {
 				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
 				mat4 modelTransform = glm::translate(identity<mat4>(), g_catPos) * eulerAngleY<float>(glm::radians<float>(g_catRotation));
 				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
 
 				g_catMesh->setupTextures();
 				g_catMesh->render();
-			}
+			}*/
 			//set camera to ducks position
 			camViewPos.x = g_duckPos.x;
 			camViewPos.z = g_duckPos.z;
-			camViewPos.y = 15;
 
 			break;
 
