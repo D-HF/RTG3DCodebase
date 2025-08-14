@@ -19,10 +19,17 @@ void ArcballCamera::calculateDerivedValues() {
 
 	// calculate orientation basis R
 	//R = glm::eulerAngleY(phi_) * glm::eulerAngleX(theta_);
-		
+
 	// calculate view and projection transform matrices
 	m_viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -m_radius)) * glm::eulerAngleX(-theta_) * glm::eulerAngleY(-phi_);
 	m_projectionMatrix = glm::perspective(glm::radians<float>(m_fovY), m_aspect, m_nearPlane, m_farPlane);
+	
+	/*
+	* failed start for orthographic camera
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	m_projectionMatrix = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f); //left, right, bottom, top <frustrum, nearPlane, farPlane
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); //camera translate*/
 }
 
 

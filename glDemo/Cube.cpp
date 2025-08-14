@@ -126,6 +126,13 @@ static unsigned int indexArray[] = {
 	21, 22, 23
 };
 
+/*
+* attempt at multiple cube positions, doesnt work with current format of file
+glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(1.0f,0.0f,0.0f),
+	glm::vec3(2.0f,1.0f,0.0f)
+};*/
 
 
 Cube::Cube() {

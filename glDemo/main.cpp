@@ -8,6 +8,7 @@
 #include "AIMesh.h"
 #include "Cube.h"
 #include "Scene.h"
+#include "Ground.h"
 
 
 using namespace std;
@@ -27,6 +28,7 @@ double				g_prevMouseX, g_prevMouseY;
 ArcballCamera* g_mainCamera = nullptr;
 CGPrincipleAxes* g_principleAxes = nullptr;
 Cube* g_cube = nullptr;
+Ground* g_ground = nullptr;
 
 GLuint g_flatColourShader;
 
@@ -46,14 +48,14 @@ AIMesh* g_planetMesh = nullptr;
 AIMesh* g_duckMesh = nullptr; //duck mesh
 
 int g_showing = 0;
-int g_NumExamples = 3;
+int g_NumExamples = 4;
 
 //Global Game Object
 Scene* g_Scene = nullptr;
 
 // Window size
-const unsigned int g_initWidth = 900;
-const unsigned int g_initHeight = 900;
+const unsigned int g_initWidth = 800;
+const unsigned int g_initHeight = 800;
 
 #pragma endregion
 
@@ -142,6 +144,7 @@ int main()
 	g_principleAxes = new CGPrincipleAxes();
 
 	g_cube = new Cube();
+	g_ground = new Ground();
 
 	g_creatureMesh = new AIMesh(string("Assets\\beast\\beast.obj"));
 	if (g_creatureMesh) {
@@ -209,10 +212,10 @@ void renderScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	mat4 cameraTransform = g_mainCamera->projectionTransform() * g_mainCamera->viewTransform();
-
 	mat4 cameraProjection = g_mainCamera->projectionTransform();
-	
 	mat4 cameraView = g_mainCamera->viewTransform() * translate(identity<mat4>(), -camViewPos);//QUICKSEND
+
+	
 
 
 #// Render principle axes - no modelling transforms so just use cameraTransform
@@ -230,82 +233,124 @@ void renderScene()
 		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
 
 		g_principleAxes->render();
-	}
+	}//if
 
 	switch (g_showing)
 	{
-	case 0:
-	{
-		glUseProgram(g_texDirLightShader);
+		case 0:
+		{
+			glUseProgram(g_texDirLightShader);
 
-		GLint pLocation;
-		Helper::SetUniformLocation(g_texDirLightShader, "viewMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
-		Helper::SetUniformLocation(g_texDirLightShader, "projMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
-		Helper::SetUniformLocation(g_texDirLightShader, "texture", &pLocation);
-		glUniform1i(pLocation, 0); // set to point to texture unit 0 for AIMeshes
-		Helper::SetUniformLocation(g_texDirLightShader, "DIRDir", &pLocation);
-		glUniform3fv(pLocation, 1, (GLfloat*)&g_DLdirection);
-		Helper::SetUniformLocation(g_texDirLightShader, "DIRCol", &pLocation);
-		glUniform3fv(pLocation, 1, (GLfloat*)&g_DLcolour);
-		Helper::SetUniformLocation(g_texDirLightShader, "DIRAmb", &pLocation);
-		glUniform3fv(pLocation, 1, (GLfloat*)&g_DLambient);
-		if (g_creatureMesh) {
+			GLint pLocation;
+			Helper::SetUniformLocation(g_texDirLightShader, "viewMatrix", &pLocation);
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
+			Helper::SetUniformLocation(g_texDirLightShader, "projMatrix", &pLocation);
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
+			Helper::SetUniformLocation(g_texDirLightShader, "texture", &pLocation);
+			glUniform1i(pLocation, 0); // set to point to texture unit 0 for AIMeshes
+			Helper::SetUniformLocation(g_texDirLightShader, "DIRDir", &pLocation);
+			glUniform3fv(pLocation, 1, (GLfloat*)&g_DLdirection);
+			Helper::SetUniformLocation(g_texDirLightShader, "DIRCol", &pLocation);
+			glUniform3fv(pLocation, 1, (GLfloat*)&g_DLcolour);
+			Helper::SetUniformLocation(g_texDirLightShader, "DIRAmb", &pLocation);
+			glUniform3fv(pLocation, 1, (GLfloat*)&g_DLambient);
 
-			// Setup transforms
-			Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
-			mat4 modelTransform = glm::translate(identity<mat4>(), g_beastPos) * eulerAngleY<float>(glm::radians<float>(g_beastRotation));
-			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+			if (g_creatureMesh) {
 
-			g_creatureMesh->setupTextures();
-			g_creatureMesh->render();
-		}
+				// Setup transforms
+				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
+				mat4 modelTransform = glm::translate(identity<mat4>(), g_beastPos) * eulerAngleY<float>(glm::radians<float>(g_beastRotation));
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
 
-		if (g_planetMesh) {
+				g_creatureMesh->setupTextures();
+				g_creatureMesh->render();
+			}//if creature
 
-			// Setup transforms
-			Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
-			mat4 modelTransform = glm::translate(identity<mat4>(), vec3(4.0, 4.0, 4.0));
-			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+			if (g_planetMesh) {
 
-			g_planetMesh->setupTextures();
-			g_planetMesh->render();
-		}
-		if (g_duckMesh) {
+				// Setup transforms
+				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
+				mat4 modelTransform = glm::translate(identity<mat4>(), vec3(4.0, 4.0, 4.0));
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
 
-			// Setup transforms
-			Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
-			mat4 modelTransform = glm::translate(identity<mat4>(), g_duckPos) * eulerAngleY<float>(glm::radians<float>(g_duckRotation));
-			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+				g_planetMesh->setupTextures();
+				g_planetMesh->render();
+			}//if planet
+			if (g_duckMesh) {
 
-			g_duckMesh->setupTextures();
-			g_duckMesh->render();
-		}
-		
-	}
-	break;
+				// Setup transforms
+				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
+				mat4 modelTransform = glm::translate(identity<mat4>(), g_duckPos) * eulerAngleY<float>(glm::radians<float>(g_duckRotation));
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
 
-	case 1:
-	{
-		// Render cube 
-		glUseProgram(g_flatColourShader);
-		GLint pLocation;
-		Helper::SetUniformLocation(g_flatColourShader, "viewMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
-		Helper::SetUniformLocation(g_flatColourShader, "projMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
-		Helper::SetUniformLocation(g_flatColourShader, "modelMatrix", &pLocation);
-		mat4 modelTransform = glm::translate(identity<mat4>(), vec3(2.0, 0.0, 2.0));
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
-
-		g_cube->render();
+				g_duckMesh->setupTextures();
+				g_duckMesh->render();
+			}//if duck
+		}//case 0
 		break;
-	}
-	case 2:
-		g_Scene->Render();
-	}
 
+		case 1:
+		{
+			// Render cube 
+			glUseProgram(g_flatColourShader);
+			GLint pLocation;
+			Helper::SetUniformLocation(g_flatColourShader, "viewMatrix", &pLocation);
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
+			Helper::SetUniformLocation(g_flatColourShader, "projMatrix", &pLocation);
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
+			Helper::SetUniformLocation(g_flatColourShader, "modelMatrix", &pLocation);
+			mat4 modelTransform = glm::translate(identity<mat4>(), vec3(2.0, 0.0, 2.0));
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+
+			g_cube->render();
+			break;
+		}//case 1
+		case 2:
+			g_Scene->Render();
+			break;
+		case 3:
+		{
+			// Render cube 
+			glUseProgram(g_flatColourShader);
+			GLint pLocation;
+			Helper::SetUniformLocation(g_flatColourShader, "viewMatrix", &pLocation);
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
+			Helper::SetUniformLocation(g_flatColourShader, "projMatrix", &pLocation);
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
+			Helper::SetUniformLocation(g_flatColourShader, "modelMatrix", &pLocation);
+			mat4 modelTransform = glm::translate(identity<mat4>(), vec3(2.0, 0.0, 2.0));
+			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+
+			g_ground->render();
+			
+			if (g_duckMesh) {
+				glUseProgram(g_texDirLightShader); 
+				GLint pLocation;
+				Helper::SetUniformLocation(g_texDirLightShader, "viewMatrix", &pLocation);
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
+				Helper::SetUniformLocation(g_texDirLightShader, "projMatrix", &pLocation);
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
+				Helper::SetUniformLocation(g_texDirLightShader, "texture", &pLocation);
+				glUniform1i(pLocation, 0); // set to point to texture unit 0 for AIMeshes
+				Helper::SetUniformLocation(g_texDirLightShader, "DIRDir", &pLocation);
+				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLdirection);
+				Helper::SetUniformLocation(g_texDirLightShader, "DIRCol", &pLocation);
+				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLcolour);
+				Helper::SetUniformLocation(g_texDirLightShader, "DIRAmb", &pLocation);
+				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLambient);
+
+				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
+				mat4 modelTransform = glm::translate(identity<mat4>(), g_duckPos) * eulerAngleY<float>(glm::radians<float>(g_duckRotation));
+				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
+
+				g_duckMesh->setupTextures();
+				g_duckMesh->render();
+			}//if duck
+
+			break;
+
+		}//case 3
+	}
 }
 
 
@@ -355,31 +400,47 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 		case GLFW_KEY_SPACE:
 			g_showing++;
 			g_showing = g_showing % g_NumExamples;
+			break;
 
 		case GLFW_KEY_W: //QUICKSEND
 			//move forward
 			cout << "W pressed\n";
 			camViewPos.z -= camMoveSpeed;
+			cout << camViewPos.z;
 			break;
 
 		case GLFW_KEY_S:
 			//move backward
 			camViewPos.z += camMoveSpeed;
 			cout << "S pressed\n";
+			cout << camViewPos.z;
 			break;
 
 		case GLFW_KEY_A:
 			//move left
 			camViewPos.x -= camMoveSpeed;
 			cout << "A pressed\n";
+			cout << camViewPos.x;
 			break;
 
 		case GLFW_KEY_D:
 			//move right
 			camViewPos.x += camMoveSpeed;
 			cout << "D pressed\n";
+			cout << camViewPos.x;
 			break;
-
+		case GLFW_KEY_Q:
+			//move up camera
+			camViewPos.y += camMoveSpeed;
+			cout << "Q pressed\n";
+			cout << camViewPos.y;
+			break;
+		case GLFW_KEY_E:
+			//move down camera
+			camViewPos.y -= camMoveSpeed;
+			cout << "E pressed\n";
+			cout << camViewPos.y;
+			break;
 		case GLFW_KEY_O:
 			//reset camera
 			camViewPos.x = 0.0f;
@@ -387,6 +448,43 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			camViewPos.z = 0.0f;
 			cout << "O pressed\n";
 			break;
+		case GLFW_KEY_UP:
+			//move duck forward
+			if (g_showing == 3) {
+				g_duckPos.z -= 0.05;
+				cout << "\n";
+				cout << g_duckPos.z;
+				g_duckRotation = 180;
+			}//if
+			break;
+		case GLFW_KEY_DOWN:
+			//move duck backward
+			if (g_showing == 3) {
+				g_duckPos.z += 0.05;
+				cout << "\n";
+				cout << g_duckPos.z;
+				g_duckRotation = 0;
+			}//if
+			break;
+		case GLFW_KEY_LEFT:
+			//move duck left
+			if (g_showing == 3) {
+				g_duckPos.x -= 0.05;
+				cout << "\n";
+				cout << g_duckPos.x;
+				g_duckRotation = 270;
+			}//if
+			break;
+		case GLFW_KEY_RIGHT:
+			//move duck right
+			if (g_showing == 3) {
+				g_duckPos.x += 0.05;
+				cout << "\n";
+				cout << g_duckPos.x;
+				g_duckRotation = 90;
+			}//if
+			break;
+
 		default:
 		{
 		}
@@ -408,24 +506,72 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			//move forward
 			cout << "W pressed\n";
 			camViewPos.z -= camMoveSpeed;
+			cout << camViewPos.z;
 			break;
 
 		case GLFW_KEY_S:
 			//move backward
 			camViewPos.z += camMoveSpeed;
 			cout << "S pressed\n";
+			cout << camViewPos.z;
 			break;
 
 		case GLFW_KEY_A:
 			//move left
 			camViewPos.x -= camMoveSpeed;
 			cout << "A pressed\n";
+			cout << camViewPos.x;
 			break;
 
 		case GLFW_KEY_D:
 			//move right
 			camViewPos.x += camMoveSpeed;
 			cout << "D pressed\n";
+			cout << camViewPos.x;
+			break;
+		case GLFW_KEY_Q:
+			//move up camera
+			camViewPos.y += camMoveSpeed;
+			cout << "Q pressed\n";
+			cout << camViewPos.y;
+			break;
+		case GLFW_KEY_E:
+			//move down camera
+			camViewPos.y -= camMoveSpeed;
+			cout << "E pressed\n";
+			cout << camViewPos.y;
+			break;
+		case GLFW_KEY_UP:
+			//move duck forward
+			if (g_showing == 3) {
+				g_duckPos.z -= 0.05;
+				cout << "\n";
+				cout << g_duckPos.z;
+			}//if
+			break;
+		case GLFW_KEY_DOWN:
+			//move duck backward
+			if (g_showing == 3) {
+				g_duckPos.z += 0.05;
+				cout << "\n";
+				cout << g_duckPos.z;
+			}//if
+			break;
+		case GLFW_KEY_LEFT:
+			//move duck left
+			if (g_showing == 3) {
+				g_duckPos.x -= 0.05;
+				cout << "\n";
+				cout << g_duckPos.x;
+			}//if
+			break;
+		case GLFW_KEY_RIGHT:
+			//move duck right
+			if (g_showing == 3) {
+				g_duckPos.x += 0.05;
+				cout << "\n";
+				cout << g_duckPos.x;
+			}//if
 			break;
 		default:
 		{
