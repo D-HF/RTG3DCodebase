@@ -363,21 +363,6 @@ void renderScene()
 			}//if duck
 
 			if (g_catMesh) {
-				glUseProgram(g_texDirLightShader);
-				GLint pLocation;
-				Helper::SetUniformLocation(g_texDirLightShader, "viewMatrix", &pLocation);
-				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
-				Helper::SetUniformLocation(g_texDirLightShader, "projMatrix", &pLocation);
-				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
-				Helper::SetUniformLocation(g_texDirLightShader, "texture", &pLocation);
-				glUniform1i(pLocation, 0); // set to point to texture unit 0 for AIMeshes
-				Helper::SetUniformLocation(g_texDirLightShader, "DIRDir", &pLocation);
-				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLdirection);
-				Helper::SetUniformLocation(g_texDirLightShader, "DIRCol", &pLocation);
-				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLcolour);
-				Helper::SetUniformLocation(g_texDirLightShader, "DIRAmb", &pLocation);
-				glUniform3fv(pLocation, 1, (GLfloat*)&g_DLambient);
-
 				Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
 				mat4 modelTransform = glm::translate(identity<mat4>(), g_catPos) * eulerAngleY<float>(glm::radians<float>(g_catRotation));
 				glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
@@ -453,7 +438,6 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 			break;
 		case GLFW_KEY_PERIOD:
 			//next camera
-
 			break;
 			//Camera Movement WASD + QE
 		case GLFW_KEY_W: //QUICKSEND
